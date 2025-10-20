@@ -12,8 +12,9 @@ on:
 
 jobs:
   build:
-    # Use a standard Linux runner environment
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # grants the necessary push permission
 
     steps:
       # Step A: Get a copy of your code
