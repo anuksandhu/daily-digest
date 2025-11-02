@@ -1,0 +1,78 @@
+name: Update Daily Digest
+
+on:
+  schedule:
+    # Run daily at 8:00 AM UTC (adjust to your preferred time)
+    - cron: '0 13 * * *'
+  
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+jobs:
+  update-digest:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        run: |
+          pip install -r requirements-dev.txt
+          pytest --tb=short --cov=src --cov-report=term
+        continue-on-error: false  # Fail workflow if tests fail
+      
+      - name: Run linting
+        run: |
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        continue-on-error: true  # Don't fail on linting warnings
+      
+      - name: Generate Daily Digest
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          WORDNIK_API_KEY: ${{ secrets.WORDNIK_API_KEY }}
+        run: |
+          python -m src
+      
+      - name: Check if index.html was generated
+        run: |
+          if [ ! -f index.html ]; then
+            echo "Error: index.html was not generated"
+            exit 1
+          fi
+          echo "✅ index.html generated successfully"
+          ls -lh index.html
+      
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add index.html
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update digest - $(date +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
+      
+      - name: Upload digest as artifact (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: daily-digest-${{ github.run_number }}
+          path: index.html
+          retention-days: 7

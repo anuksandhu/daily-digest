@@ -1,0 +1,18 @@
+# Development Dependencies (testing, linting, etc.)
+
+# Include production dependencies
+-r requirements.txt
+
+# Testing framework
+pytest==7.4.3
+pytest-cov==4.1.0  # Coverage reporting
+pytest-mock==3.12.0  # Mocking support
+
+# Code quality
+flake8==6.1.0  # Linting
+black==23.12.1  # Code formatting
+mypy==1.7.1  # Type checking
+
+# Test utilities
+responses==0.24.1  # Mock HTTP requests
+freezegun==1.4.0  # Mock datetime for testing

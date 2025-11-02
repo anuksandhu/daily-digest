@@ -1,0 +1,59 @@
+# Daily Digest Configuration
+# Customize these settings without modifying code
+
+# Location Settings
+location:
+  city: "San Jose"
+  country: "US"
+  timezone: "America/Los_Angeles"
+
+# Stock Symbols to Track
+stocks:
+  symbols:
+    - "AAPL"
+    - "MSFT"
+    - "NVDA"
+    - "QCOM"
+  # Alpha Vantage free tier: 5 requests/minute, 500/day
+  rate_limit_delay: 13  # seconds between requests
+
+# News Settings
+news:
+  sources:
+    - name: "TechCrunch"
+      url: "https://techcrunch.com/feed/"
+      enabled: true
+    - name: "MIT Technology Review"
+      url: "https://www.technologyreview.com/feed/"
+      enabled: true
+    - name: "The Verge"
+      url: "https://www.theverge.com/rss/index.xml"
+      enabled: false  # Can enable more sources
+  max_articles: 5  # Total articles to display
+
+# Quote of the Day
+quotes:
+  source: "zenquotes"  # Free, no API key needed
+  fallback_enabled: true
+
+# Word of the Day
+word_of_the_day:
+  primary_source: "wordnik"  # Requires API key
+  fallback_source: "dictionary_api"  # Free, no key needed
+  fallback_enabled: true
+
+# Retry Configuration
+retry:
+  max_attempts: 3
+  initial_delay: 1  # seconds
+  backoff_multiplier: 2  # exponential: 1s, 2s, 4s
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "detailed"  # simple or detailed
+
+# Output
+output:
+  filename: "index.html"
+  title: "Daily Digest"

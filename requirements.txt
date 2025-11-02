@@ -1,2 +1,16 @@
-requests
-python-dotenv
+# Production Dependencies for Daily Digest V2.0
+
+# HTTP requests
+requests==2.31.0
+
+# Environment variable management
+python-dotenv==1.0.0
+
+# Configuration file parsing
+PyYAML==6.0.1
+
+# RSS/XML feed parsing (for news)
+feedparser==6.0.10
+
+# Retry logic (more robust than manual implementation)
+tenacity==8.2.3
