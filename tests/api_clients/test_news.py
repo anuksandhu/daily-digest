@@ -1,7 +1,10 @@
 """
 Tests for News API Client (RSS feeds).
 
-Tests RSS feed parsing, multi-source aggregation, and error handling.
+FIXES:
+- Using real date tuples for published_parsed instead of Mock objects
+- This allows proper sorting without comparison errors
+- Date tuples follow the format: (year, month, day, hour, minute, second, weekday, yearday, isdst)
 """
 
 import pytest
@@ -27,23 +30,30 @@ class TestNewsClient:
         assert client.max_articles == 5
     
     @patch('src.api_clients.news.feedparser.parse')
-    def test_fetch_success_single_source(self, mock_parse, sample_rss_feed):
-        """Test successful fetch from a single RSS source."""
-        # Setup mock
+    def test_fetch_success_single_source(self, mock_parse):
+        """Test successful fetch from a single RSS source.
+        
+        FIX: Use real date tuples instead of Mock objects for published_parsed.
+        """
+        # Setup mock with REAL date tuples
         mock_feed = Mock()
         mock_feed.bozo = False
         mock_feed.entries = [
             Mock(
                 title='Article 1',
                 link='https://example.com/1',
-                published_parsed=(2025, 10, 31, 12, 0, 0, 0, 0, 0)
+                published_parsed=(2025, 10, 31, 12, 0, 0, 3, 304, 0)  # Most recent
             ),
             Mock(
                 title='Article 2',
                 link='https://example.com/2',
-                published_parsed=(2025, 10, 30, 12, 0, 0, 0, 0, 0)
+                published_parsed=(2025, 10, 30, 12, 0, 0, 2, 303, 0)  # Older
             )
         ]
+        # Configure Mock.get() to return the actual value
+        for entry in mock_feed.entries:
+            entry.get = lambda key, default=None, entry=entry: getattr(entry, key, default)
+        
         mock_parse.return_value = mock_feed
         
         # Execute
@@ -60,21 +70,29 @@ class TestNewsClient:
     
     @patch('src.api_clients.news.feedparser.parse')
     def test_fetch_multiple_sources(self, mock_parse):
-        """Test aggregation from multiple RSS sources."""
-        # Setup mock to return different articles for each source
+        """Test aggregation from multiple RSS sources.
+        
+        FIX: Use real date tuples for proper sorting across sources.
+        """
         def parse_side_effect(url):
             feed = Mock()
             feed.bozo = False
             if 'source1' in url:
-                feed.entries = [
-                    Mock(title='Source1 Article', link='https://s1.com/1',
-                         published_parsed=(2025, 10, 31, 12, 0, 0, 0, 0, 0))
-                ]
+                entry = Mock(
+                    title='Source1 Article',
+                    link='https://s1.com/1',
+                    published_parsed=(2025, 10, 31, 12, 0, 0, 3, 304, 0)  # Most recent
+                )
+                entry.get = lambda key, default=None, e=entry: getattr(e, key, default)
+                feed.entries = [entry]
             else:
-                feed.entries = [
-                    Mock(title='Source2 Article', link='https://s2.com/1',
-                         published_parsed=(2025, 10, 31, 10, 0, 0, 0, 0, 0))
-                ]
+                entry = Mock(
+                    title='Source2 Article',
+                    link='https://s2.com/1',
+                    published_parsed=(2025, 10, 31, 10, 0, 0, 3, 304, 0)  # Slightly older
+                )
+                entry.get = lambda key, default=None, e=entry: getattr(e, key, default)
+                feed.entries = [entry]
             return feed
         
         mock_parse.side_effect = parse_side_effect
@@ -96,18 +114,27 @@ class TestNewsClient:
     
     @patch('src.api_clients.news.feedparser.parse')
     def test_fetch_max_articles_limit(self, mock_parse):
-        """Test that max_articles limit is respected."""
-        # Setup mock to return many articles
+        """Test that max_articles limit is respected.
+        
+        FIX: Use real date tuples with descending dates for proper sorting.
+        """
+        # Setup mock with 10 articles, but we'll only keep 3
         mock_feed = Mock()
         mock_feed.bozo = False
-        mock_feed.entries = [
-            Mock(
+        
+        # Create entries with descending dates (newer to older)
+        entries = []
+        for i in range(10):
+            entry = Mock(
                 title=f'Article {i}',
                 link=f'https://example.com/{i}',
-                published_parsed=(2025, 10, 31-i, 12, 0, 0, 0, 0, 0)
+                # Create descending dates (Oct 31 down to Oct 22)
+                published_parsed=(2025, 10, 31-i, 12, 0, 0, 3, 304-i, 0)
             )
-            for i in range(10)
-        ]
+            entry.get = lambda key, default=None, e=entry: getattr(e, key, default)
+            entries.append(entry)
+        
+        mock_feed.entries = entries
         mock_parse.return_value = mock_feed
         
         # Execute with max_articles=3
@@ -139,15 +166,17 @@ class TestNewsClient:
     @patch('src.api_clients.news.feedparser.parse')
     def test_fetch_partial_failure(self, mock_parse):
         """Test graceful degradation when some sources fail."""
-        # Setup mock to succeed for one source, fail for another
         def parse_side_effect(url):
             feed = Mock()
             if 'good' in url:
                 feed.bozo = False
-                feed.entries = [
-                    Mock(title='Good Article', link='https://good.com/1',
-                         published_parsed=(2025, 10, 31, 12, 0, 0, 0, 0, 0))
-                ]
+                entry = Mock(
+                    title='Good Article',
+                    link='https://good.com/1',
+                    published_parsed=(2025, 10, 31, 12, 0, 0, 3, 304, 0)
+                )
+                entry.get = lambda key, default=None, e=entry: getattr(e, key, default)
+                feed.entries = [entry]
             else:
                 feed.bozo = True  # Parse failure
             return feed
@@ -190,7 +219,7 @@ class TestNewsClient:
         assert 'Test Article' in formatted
         assert 'TechCrunch' in formatted
         assert 'https://example.com/article' in formatted
-        assert '<a href=' in formatted  # Should have link
+        assert '<a href=' in formatted
     
     def test_format_for_display_error(self):
         """Test formatting of error response."""

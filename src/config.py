@@ -69,12 +69,28 @@ class Config:
             sys.exit(1)
     
     def _load_api_keys(self):
-        """Load API keys from environment variables."""
+        """Load API keys from environment variables.
+        
+        Normalizes empty strings to None for consistency.
+        """
         self._api_keys = {
-            'openweather': os.getenv('OPENWEATHER_API_KEY'),
-            'alpha_vantage': os.getenv('ALPHA_VANTAGE_API_KEY'),
-            'wordnik': os.getenv('WORDNIK_API_KEY'),  # Optional
+            'openweather': self._get_env_key('OPENWEATHER_API_KEY'),
+            'alpha_vantage': self._get_env_key('ALPHA_VANTAGE_API_KEY'),
+            'wordnik': self._get_env_key('WORDNIK_API_KEY'),  # Optional
         }
+    
+    def _get_env_key(self, key_name: str) -> Optional[str]:
+        """Get environment variable and normalize empty strings to None.
+        
+        Args:
+            key_name: Environment variable name
+            
+        Returns:
+            API key string or None if not set or empty
+        """
+        value = os.getenv(key_name)
+        # Normalize empty strings to None
+        return value if value else None
     
     def _validate(self):
         """Validate required configuration and API keys."""

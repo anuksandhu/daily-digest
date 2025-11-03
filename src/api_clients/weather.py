@@ -87,11 +87,23 @@ class WeatherClient(BaseAPIClient):
             }
         
         except requests.HTTPError as e:
+            # Handle specific HTTP errors with user-friendly messages
             if e.response.status_code == 401:
-                return self._handle_error(e, "Invalid API key")
+                error_msg = "Weather service: Invalid API key. Please check your credentials."
+                self.logger.error(f"Invalid API key: {str(e)}")
+                return {
+                    'success': False,
+                    'error': error_msg
+                }
             elif e.response.status_code == 404:
-                return self._handle_error(e, f"Location not found: {self.location}")
+                error_msg = f"Weather service: Location '{self.location}' not found. Please verify city and country."
+                self.logger.error(f"Location not found: {self.location}")
+                return {
+                    'success': False,
+                    'error': error_msg
+                }
             else:
+                # For other HTTP errors, use generic handling
                 return self._handle_error(e, "HTTP error")
         
         except (requests.RequestException, KeyError, ValueError) as e:
