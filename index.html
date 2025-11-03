@@ -1,48 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Digest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .timestamp {
+            color: #777;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #555;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-content {
+            color: #666;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+        
+        .section-content a {
+            color: #667eea;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .section-content a:hover {
+            border-bottom-color: #667eea;
+        }
+        
+        /* Section-specific styling */
+        .weather {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            border-left-color: #00acc1;
+        }
+        
+        .news {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left-color: #fb8c00;
+        }
+        
+        .stocks {
+            background: linear-gradient(135deg, #f0fff4 0%, #c8e6c9 100%);
+            border-left-color: #43a047;
+        }
+        
+        .quote {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left-color: #8e24aa;
+        }
+        
+        .word {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            border-left-color: #fbc02d;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📰 Daily Digest</h1>
+            <p class="timestamp">Generated on 2025-11-02 19:16:14</p>
+        </header>
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Your Automated Daily Digest</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; color: #333; background-color: #f4f4f4; }
-            .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-            h1 { color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-            h2 { color: #555; margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-            p, ul { line-height: 1.6; margin-bottom: 15px; }
-            .weather { background: #e0f7fa; padding: 10px; border-radius: 4px; }
-            .stock { background: #f0fff4; padding: 10px; border-radius: 4px; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Automated Daily Digest</h1>
-            <p style="color: #777;">Generated on 2025-11-01 09:13:37</p>
-
+        <div class="section weather">
             <h2>☀️ Local Weather</h2>
-            <div class="weather">
-                <p>San Jose, US: 57°F with clear sky.</p>
+            <div class="section-content">
+                San Jose, US: 65.2°F with clear sky.
             </div>
-            
-            <h2>📰 Top Tech News</h2>
-            <p style="white-space: pre-wrap;">Top news headlines are temporarily unavailable.</p>
-
-            <h2>📈 Stock Market Snapshot</h2>
-            <div class="stock">
-                <p style="white-space: pre-wrap;">AAPL: $270.37 (-0.38%) ▼
-GOOGL: $281.19 (-0.10%) ▼</p>
-            </div>
-
-            <h2>🧠 Daily Fun Fact</h2>
-            <div style="background: #fff3e0; padding: 10px; border-radius: 4px; border-left: 5px solid #ff9800;">
-                <p><strong>Did you know?</strong> A fun fact is not available right now. Try again later!</p>
-            </div>
-            
-            <p style="text-align: center; font-size: 0.8em; color: #aaa; margin-top: 30px;">
-                Automated by a Python Script via GitHub Actions
-            </p>
         </div>
-    </body>
-    </html>
-    
+        
+        <div class="section news">
+            <h2>📰 Top Tech News</h2>
+            <div class="section-content">
+                • <a href='https://techcrunch.com/2025/11/02/kevin-roses-simple-test-for-ai-hardware-would-you-want-to-punch-someone-in-the-face-whos-wearing-it/' target='_blank'>Kevin Rose’s simple test for AI hardware — would you want to punch someone in the face who’s wearing it?</a> <span style='color: #888; font-size: 0.9em;'>(TechCrunch)</span><br>• <a href='https://techcrunch.com/2025/11/02/alphabet-is-increasingly-launching-moonshot-projects-as-independent-companies-heres-why/' target='_blank'>Alphabet is increasingly launching “moonshot” projects as independent companies — here’s why</a> <span style='color: #888; font-size: 0.9em;'>(TechCrunch)</span><br>• <a href='https://techcrunch.com/2025/11/02/sequoias-roelof-botha-warns-founders-about-chasing-sky-high-valuations-as-the-firm-doubles-down-on-its-selective-approach/' target='_blank'>Sequoia’s Roelof Botha warns founders about chasing sky-high valuations as the firm doubles down on its selective approach</a> <span style='color: #888; font-size: 0.9em;'>(TechCrunch)</span><br>• <a href='https://www.technologyreview.com/2025/10/31/1127461/heres-the-latest-company-planning-for-gene-edited-babies/' target='_blank'>Here’s the latest company planning for gene-edited babies</a> <span style='color: #888; font-size: 0.9em;'>(MIT Technology Review)</span><br>• <a href='https://www.technologyreview.com/2025/10/31/1127444/the-download-down-the-mandela-effect-rabbit-hole-and-the-promise-of-a-vaccine-for-colds/' target='_blank'>The Download: down the Mandela effect rabbit hole, and the promise of a vaccine for colds</a> <span style='color: #888; font-size: 0.9em;'>(MIT Technology Review)</span>
+            </div>
+        </div>
+
+        <div class="section stocks">
+            <h2>📈 Stock Market Snapshot</h2>
+            <div class="section-content">
+                AAPL: $270.37 (<span style='color: red;'>-0.38%</span>) ▼<br>MSFT: $517.81 (<span style='color: red;'>-1.51%</span>) ▼<br>NVDA: $202.49 (<span style='color: red;'>-0.20%</span>) ▼<br>QCOM: $180.90 (<span style='color: green;'>+2.05%</span>) ▲
+            </div>
+        </div>
+
+        <div class="section quote">
+            <h2>💭 Quote of the Day</h2>
+            <div class="section-content">
+                "The purpose of life is the life of purpose." — <em>Robin Sharma</em>
+            </div>
+        </div>
+        
+        <div class="section word">
+            <h2>📚 Word of the Day</h2>
+            <div class="section-content">
+                <strong>Pragmatic</strong>: A man of business.
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                Automated by a Python script via 
+                <a href="https://github.com/features/actions" target="_blank">GitHub Actions</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.85em;">
+                Built with ❤️ using Python, APIs, and modern software practices
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
