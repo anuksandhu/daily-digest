@@ -2,7 +2,7 @@ name: Update Daily Digest
 
 on:
   schedule:
-    # Run daily at 8:00 AM UTC (adjust to your preferred time)
+    # Run daily at 13:00 PM UTC (adjust to your preferred time)
     - cron: '0 13 * * *'
   
   # Allow manual trigger from Actions tab
@@ -26,17 +26,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
+      - name: Verify configuration files
+        run: |
+          echo "Checking for required files..."
+          if [ ! -f config.yaml ]; then
+            echo "❌ Error: config.yaml not found"
+            exit 1
+          fi
+          echo "✅ Configuration files verified"
+      
       - name: Run tests
         run: |
           pip install -r requirements-dev.txt
-          pytest --tb=short --cov=src --cov-report=term
+          pytest --tb=short --cov=src --cov-report=term-missing
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          WORDNIK_API_KEY: ${{ secrets.WORDNIK_API_KEY }}
         continue-on-error: false  # Fail workflow if tests fail
-      
-      - name: Run linting
-        run: |
-          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        continue-on-error: true  # Don't fail on linting warnings
       
       - name: Generate Daily Digest
         env:
@@ -44,16 +51,20 @@ jobs:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           WORDNIK_API_KEY: ${{ secrets.WORDNIK_API_KEY }}
         run: |
+          echo "Generating daily digest..."
           python -m src
+          echo "✅ Digest generation completed"
       
-      - name: Check if index.html was generated
+      - name: Verify output file
         run: |
           if [ ! -f index.html ]; then
-            echo "Error: index.html was not generated"
+            echo "❌ Error: index.html was not generated"
+            echo "Checking for alternative output filenames..."
+            ls -la *.html || echo "No HTML files found"
             exit 1
           fi
           echo "✅ index.html generated successfully"
-          ls -lh index.html
+          echo "File size: $(du -h index.html | cut -f1)"
       
       - name: Commit and push changes
         run: |
@@ -63,16 +74,31 @@ jobs:
           
           # Only commit if there are changes
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "ℹ️  No changes to commit - digest content unchanged"
           else
-            git commit -m "Update digest - $(date +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "🤖 Update digest - $(date +'%Y-%m-%d %H:%M UTC')"
             git push
+            echo "✅ Changes committed and pushed"
           fi
       
-      - name: Upload digest as artifact (for debugging)
+      - name: Upload digest as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: daily-digest-${{ github.run_number }}
           path: index.html
           retention-days: 7
+      
+      - name: Workflow summary
+        if: always()
+        run: |
+          echo "## Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f index.html ]; then
+            echo "✅ Digest generated successfully" >> $GITHUB_STEP_SUMMARY
+            echo "📊 File size: $(du -h index.html | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Digest generation failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🕐 Completed at: $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
