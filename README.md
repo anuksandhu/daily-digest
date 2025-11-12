@@ -11,7 +11,7 @@ A robust, modular daily digest automation system that fetches data from multiple
 - **📊 Multi-Source Data Aggregation**
   - Real-time weather from OpenWeatherMap
   - Tech news from RSS feeds (TechCrunch, Hacker News, The Verge)
-  - Stock quotes with rate limiting (AAPL, GOOGL)
+  - Stock quotes with rate limiting
   - Daily inspirational quote
   - Word of the day with intelligent fallbacks
 
@@ -51,36 +51,42 @@ A robust, modular daily digest automation system that fetches data from multiple
 ### Installation
 
 1. **Clone the repository**
-   \`\`\`bash
+
+   ```bash
    git clone https://github.com/yourusername/daily-digest-v2.git
    cd daily-digest-v2
-   \`\`\`
+   ```
 
 2. **Create virtual environment (recommended)**
-   \`\`\`bash
+
+   ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   \`\`\`
+   ```
 
 3. **Install dependencies**
-   \`\`\`bash
+
+   ```bash
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 4. **Configure API keys**
-   \`\`\`bash
+
+   ```bash
    cp .env.example .env
+
    # Edit .env and add your API keys
-   \`\`\`
+   ```
 
 5. **Run the digest generator**
-   \`\`\`bash
+
+   ```bash
    python -m src
-   \`\`\`
+   ```
 
 ## 🧪 Running Tests
 
-\`\`\`bash
+```bash
 # Install development dependencies
 pip install -r requirements-dev.txt
 
@@ -93,7 +99,7 @@ pytest tests/integration/   # Integration tests only
 
 # Generate HTML coverage report
 pytest --cov-report=html
-\`\`\`
+```
 
 ## 📝 License
 
@@ -101,4 +107,4 @@ This project is available for portfolio and educational purposes.
 
 ---
 
-**Built with ❤️ using Python and modern software practices.**
+**Built with passion using Python and modern software practices.**
